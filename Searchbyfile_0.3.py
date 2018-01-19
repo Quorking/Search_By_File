@@ -112,6 +112,7 @@ def Create_Range(DateRangeStartMM, DateRangeStartYY):
 ##  Search either Receive and/or Send directories using list of months to search
 def Search_Directories(FileNumber, SendInd, ReceiveInd, RangestoSearch):
     ##RECEIVE SEARCH
+    print('Processing...')
     if ReceiveInd == 'y':
         root = 'E:\\receive\\bdp'
         dst = 'E:\\copy\\receive'
@@ -250,7 +251,7 @@ def main():
     FileNumber, SendInd, ReceiveInd, DateRangeStartMM, DateRangeStartYY = get_user_input(month, year)
     RangestoSearch = Create_Range(DateRangeStartMM, DateRangeStartYY)
     Search_Directories(FileNumber, SendInd, ReceiveInd, RangestoSearch)
-    print('\nSearch complete')
+    print('\nSearch complete - Files are available at E:\copy\send & E:\copy\receive')
     while True:    
         again = input('Do you have another search? (Y/N) ')
         if again.lower() == 'y':
