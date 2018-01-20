@@ -36,9 +36,13 @@ def get_user_input(month, year):
         #Get Send Indicator
         while True:
             try:
-                SendInd = input('\nDo you want to search send files? (Y/N) ' ).lower()
-                if not SendInd == 'y' and not SendInd == 'n':
+                SInd = input('\nDo you want to search send files? (Y/N) ' ).lower()
+                if not SInd == 'y' and not SInd == 'n':
                     raise TypeError
+                if SInd == 'y':
+                    filer = input('\nPlease enter the 3 digit filer code for client: ')
+                    SendInd = (str(SInd), str(filer))
+   
                 break
             
             except TypeError:
@@ -127,9 +131,11 @@ def Search_Directories(FileNumber, SendInd, ReceiveInd, RangestoSearch):
                     if str(FileNumber) in FileContentsRead:
                         if os.path.isdir(dst) == True:
                             shutil.copy(root + str(file), dst)
+                            print('R '+ str (file) )
                         else:
                             os.mkdir(dst)
-                            shutil.copy(root + str(file), dst)   
+                            shutil.copy(root + str(file), dst)
+                            print('R '+ str (file) )
                     FileContents.close()
                     
             #Case 2 - Get Files from Past Receive Directories, and handle zip files
@@ -162,13 +168,14 @@ def Search_Directories(FileNumber, SendInd, ReceiveInd, RangestoSearch):
                                     ZippedFileContents = zippeddir.open(zippedfiles)
                                     ZippedFileContentsRead = str(ZippedFileContents.read(), 'latin-1')
                                     if str(FileNumber) in ZippedFileContentsRead or str(FileNumber) in zippedfiles:
-                                        print('R '+ str (zippedfiles) )
                                         if os.path.isdir(dst) == True:
                                             zippeddir.extract(zippedfiles, path=dst)
+                                            print('R '+ str (zippedfiles) )
                                             ZippedFileContents.close()
                                         else:
                                             os.mkdir(dst)
                                             zippeddir.extract(zippedfiles, path=dst)
+                                            print('R '+ str (zippedfiles) )
                                             ZippedFileContents.close()
                                     else:
                                         ZippedFileContents.close() 
@@ -179,7 +186,7 @@ def Search_Directories(FileNumber, SendInd, ReceiveInd, RangestoSearch):
                     pass
                 
     ##SEND SEARCH    
-    if SendInd == 'y':
+    if SendInd[0] == 'y':
         root = 'E:\\Send\\hist\\'
         dst = 'E:\\copy\\send'
         os.chdir(root)
@@ -190,7 +197,7 @@ def Search_Directories(FileNumber, SendInd, ReceiveInd, RangestoSearch):
                 if file[-4:] == '.ABI':
                     FileContents = open(root + str(file), 'r')
                     FileContentsRead = FileContents.read()
-                    if str(FileNumber) in FileContentsRead:
+                    if str(FileNumber) in FileContentsRead and SendInd[1] in FileContentsRead:
                         if os.path.isdir(dst) == True:
                             shutil.copy(root + str(file), dst)
                             print('S '+ str(file) )
@@ -211,7 +218,7 @@ def Search_Directories(FileNumber, SendInd, ReceiveInd, RangestoSearch):
                             target = str(root) + str(dirs) + '\\' + str(dirfiles)
                             FileContents = open(target, 'r')
                             FileContentsRead = FileContents.read()
-                            if str(FileNumber) in FileContentsRead:
+                            if str(FileNumber) in FileContentsRead and SendInd[1] in FileContentsRead:
                                 if os.path.isdir(dst) == True:
                                     shutil.copy(target, dst)
                                     print('S '+ str(dirfiles) )
@@ -228,7 +235,7 @@ def Search_Directories(FileNumber, SendInd, ReceiveInd, RangestoSearch):
                                 if zippedfiles[-4:] == '.ABI':
                                     ZippedFileContents = zippeddir.open(zippedfiles)
                                     ZippedFileContentsRead = str(ZippedFileContents.read(), 'latin-1')
-                                    if str(FileNumber) in ZippedFileContentsRead or str(FileNumber) in zippedfiles:
+                                    if str(FileNumber) in ZippedFileContentsRead  or str(FileNumber) in zippedfiles and SendInd[1] in ZippedFileContentsRead:
                                         if os.path.isdir(dst) == True:
                                             zippeddir.extract(zippedfiles, path=dst)
                                             print('S '+ str(zippedfiles) )
@@ -251,7 +258,7 @@ def main():
     FileNumber, SendInd, ReceiveInd, DateRangeStartMM, DateRangeStartYY = get_user_input(month, year)
     RangestoSearch = Create_Range(DateRangeStartMM, DateRangeStartYY)
     Search_Directories(FileNumber, SendInd, ReceiveInd, RangestoSearch)
-    print('\nSearch complete\nFiles are available at E:\copy\send & E:\copy\\receive')
+    print('\nSearch complete\nFiles are available at E:\copy\send & E:\copy\\receive\n')
     while True:    
         again = input('Do you have another search? (Y/N) ')
         if again.lower() == 'y':
